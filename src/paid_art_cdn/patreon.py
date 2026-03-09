@@ -64,7 +64,12 @@ async def exchange_code(code: str) -> TokenData:
             },
         )
         resp.raise_for_status()
-    return _parse_token_response(resp.json())
+    token_json = resp.json()
+    logger.info(
+        "Patreon token exchange response (secrets redacted): %s",
+        {k: ("***" if "token" in k or "secret" in k else v) for k, v in token_json.items()},
+    )
+    return _parse_token_response(token_json)
 
 
 async def refresh_access_token(refresh_token: str) -> TokenData:
@@ -95,7 +100,7 @@ async def get_identity(access_token: str) -> PatreonIdentity:
         resp.raise_for_status()
     payload = resp.json()
 
-    logger.debug("Patreon identity raw payload: %s", payload)
+    logger.info("Patreon identity raw payload: %s", payload)
 
     user_id: str = payload["data"]["id"]
     attrs: dict = payload["data"].get("attributes", {})

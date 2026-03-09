@@ -1,8 +1,11 @@
 """Protected file-delivery route."""
 
+import logging
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, Request
+
+logger = logging.getLogger(__name__)
 from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from slowapi import Limiter
@@ -64,7 +67,14 @@ async def _check_access(
     allowed_tiers = {t.strip() for t in settings.paid_tier.split(",")}
 
     if session.patron_status != "active_patron":
-        print(f"[DEV] 403: patron_status={session.patron_status!r} (not active_patron)", flush=True)
+        logger.warning(
+            "Access denied: patron_status=%r user_id=%s name=%r file=%s client=%s",
+            session.patron_status,
+            session.patreon_user_id,
+            session.full_name,
+            file_name,
+            request.client,
+        )
         return templates.TemplateResponse(
             request,
             "unauthorized.html",
@@ -73,7 +83,15 @@ async def _check_access(
         )
 
     if session.tier_title not in allowed_tiers:
-        print(f"[DEV] 403: tier={session.tier_title!r} not in allowed={allowed_tiers}", flush=True)
+        logger.warning(
+            "Access denied: tier=%r not in allowed=%s user_id=%s name=%r file=%s client=%s",
+            session.tier_title,
+            sorted(allowed_tiers),
+            session.patreon_user_id,
+            session.full_name,
+            file_name,
+            request.client,
+        )
         return templates.TemplateResponse(
             request,
             "wrong_tier.html",
