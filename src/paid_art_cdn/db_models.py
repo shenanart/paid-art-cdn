@@ -11,6 +11,22 @@ def _utcnow() -> datetime:
     return datetime.now(tz=timezone.utc).replace(tzinfo=None)
 
 
+class OAuthState(Base):
+    """Short-lived CSRF state tokens for the Patreon OAuth flow.
+
+    Stored in the database rather than a cookie so the callback validates
+    correctly regardless of which browser context Patreon redirects into
+    (e.g. when the Patreon mobile app intercepts the authorize URL via deep
+    linking and opens the redirect_uri in a new tab or WebView).
+    """
+
+    __tablename__ = "oauth_states"
+
+    state: Mapped[str] = mapped_column(String, primary_key=True)
+    next_url: Mapped[str] = mapped_column(String, default="/")
+    expires_at: Mapped[datetime] = mapped_column(DateTime)
+
+
 class UserSession(Base):
     __tablename__ = "user_sessions"
 
@@ -21,8 +37,6 @@ class UserSession(Base):
     )
     patreon_user_id: Mapped[str] = mapped_column(String, index=True)
     full_name: Mapped[str | None] = mapped_column(String, nullable=True)
-    email: Mapped[str | None] = mapped_column(String, nullable=True)
-
     # Patreon OAuth tokens
     access_token: Mapped[str] = mapped_column(String)
     refresh_token: Mapped[str | None] = mapped_column(String, nullable=True)

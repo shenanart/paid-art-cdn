@@ -32,7 +32,6 @@ class TokenData:
 class PatreonIdentity:
     patreon_user_id: str
     full_name: str | None
-    email: str | None
     patron_status: str | None
     tier_title: str | None
     currently_entitled_cents: float
@@ -127,7 +126,6 @@ async def get_identity(access_token: str) -> PatreonIdentity:
     return PatreonIdentity(
         patreon_user_id=user_id,
         full_name=attrs.get("full_name"),
-        email=attrs.get("email"),
         patron_status=patron_status,
         tier_title=tier_title,
         currently_entitled_cents=currently_entitled_cents,

@@ -114,7 +114,6 @@ async def create_or_update_session(
         session.created_at = now
 
     session.full_name = identity.full_name
-    session.email = identity.email
     session.access_token = token_data.access_token
     session.refresh_token = token_data.refresh_token
     session.token_expires_at = token_data.expires_at.replace(tzinfo=None)
