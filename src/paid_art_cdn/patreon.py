@@ -17,7 +17,7 @@ PATREON_AUTHORIZE_URL = "https://www.patreon.com/oauth2/authorize"
 OAUTH_SCOPES = "identity identity.memberships"
 
 _IDENTITY_PARAMS: dict[str, str] = {
-    "include": "memberships,memberships.currently_entitled_tiers",
+    "include": "memberships,memberships.currently_entitled_tiers,memberships.campaign",
     "fields[user]": "full_name",
     "fields[member]": "patron_status,currently_entitled_amount_cents,last_charge_status",
     "fields[tier]": "title,amount_cents",
@@ -112,13 +112,26 @@ async def get_identity(access_token: str) -> PatreonIdentity:
         attrs,
     )
 
+    settings = get_settings()
+    campaign_id = settings.patreon_campaign_id
+
     # Index included resources by type + id
     tiers_by_id = {r["id"]: r for r in included if r.get("type") == "tier"}
-    members = [r for r in included if r.get("type") == "member"]
+    all_members = [r for r in included if r.get("type") == "member"]
+
+    # Filter to only the membership for our campaign — identity.memberships returns
+    # ALL memberships across every creator the user has ever followed.
+    members = [
+        m for m in all_members
+        if m.get("relationships", {}).get("campaign", {}).get("data", {}).get("id") == campaign_id
+    ]
 
     logger.info(
-        "Patreon included resources: %d member(s), %d tier(s)",
+        "Patreon included resources: %d total member(s) across all campaigns, "
+        "%d matching our campaign_id=%s, %d tier(s)",
+        len(all_members),
         len(members),
+        campaign_id,
         len(tiers_by_id),
     )
     for t_id, tier in tiers_by_id.items():
@@ -134,7 +147,13 @@ async def get_identity(access_token: str) -> PatreonIdentity:
     tier_title: str | None = None
 
     if not members:
-        logger.info("Patreon identity: no member record (user is not a patron)")
+        logger.info(
+            "Patreon identity: no member record for our campaign (user_id=%s "
+            "has %d membership(s) but none match campaign_id=%s)",
+            user_id,
+            len(all_members),
+            campaign_id,
+        )
     else:
         member = members[0]
         m_attrs = member.get("attributes", {})
