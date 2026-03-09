@@ -1,11 +1,14 @@
 """Patreon OAuth2 and API v2 client."""
 
+import logging
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 
 import httpx
 
 from .settings import get_settings
+
+logger = logging.getLogger(__name__)
 
 PATREON_TOKEN_URL = "https://www.patreon.com/api/oauth2/token"
 PATREON_IDENTITY_URL = "https://www.patreon.com/api/oauth2/v2/identity"
@@ -92,19 +95,42 @@ async def get_identity(access_token: str) -> PatreonIdentity:
         resp.raise_for_status()
     payload = resp.json()
 
+    logger.debug("Patreon identity raw payload: %s", payload)
+
     user_id: str = payload["data"]["id"]
     attrs: dict = payload["data"].get("attributes", {})
     included: list[dict] = payload.get("included", [])
+
+    logger.info(
+        "Patreon user data: id=%s attributes=%s",
+        user_id,
+        attrs,
+    )
 
     # Index included resources by type + id
     tiers_by_id = {r["id"]: r for r in included if r.get("type") == "tier"}
     members = [r for r in included if r.get("type") == "member"]
 
+    logger.info(
+        "Patreon included resources: %d member(s), %d tier(s)",
+        len(members),
+        len(tiers_by_id),
+    )
+    for t_id, tier in tiers_by_id.items():
+        logger.info(
+            "  tier id=%s title=%r amount_cents=%s",
+            t_id,
+            tier.get("attributes", {}).get("title"),
+            tier.get("attributes", {}).get("amount_cents"),
+        )
+
     patron_status: str | None = None
     currently_entitled_cents: float = 0.0
     tier_title: str | None = None
 
-    if members:
+    if not members:
+        logger.info("Patreon identity: no member record (user is not a patron)")
+    else:
         member = members[0]
         m_attrs = member.get("attributes", {})
         patron_status = m_attrs.get("patron_status", None)
@@ -112,16 +138,46 @@ async def get_identity(access_token: str) -> PatreonIdentity:
             m_attrs.get("currently_entitled_amount_cents") or 0.0
         )
 
+        logger.info(
+            "Patreon member: patron_status=%r entitled_cents=%s last_charge_status=%r",
+            patron_status,
+            currently_entitled_cents,
+            m_attrs.get("last_charge_status"),
+        )
+
         entitled_tier_refs: list[dict] = (
             member.get("relationships", {})
             .get("currently_entitled_tiers", {})
             .get("data", [])
         )
+        logger.info(
+            "Patreon entitled tier refs: %s",
+            entitled_tier_refs,
+        )
+
         if entitled_tier_refs:
             tier_id = entitled_tier_refs[0]["id"]
             tier = tiers_by_id.get(tier_id)
             if tier:
                 tier_title = tier.get("attributes", {}).get("title")
+                logger.info("Patreon resolved entitled tier: id=%s title=%r", tier_id, tier_title)
+            else:
+                logger.warning(
+                    "Patreon entitled tier id=%s not found in included resources "
+                    "(tiers present: %s)",
+                    tier_id,
+                    list(tiers_by_id.keys()),
+                )
+
+    logger.info(
+        "Patreon identity parsed: user_id=%s full_name=%r patron_status=%r "
+        "tier=%r entitled_cents=%s",
+        user_id,
+        attrs.get("full_name"),
+        patron_status,
+        tier_title,
+        currently_entitled_cents,
+    )
 
     return PatreonIdentity(
         patreon_user_id=user_id,
