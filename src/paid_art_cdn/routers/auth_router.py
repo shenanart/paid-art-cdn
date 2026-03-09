@@ -10,9 +10,9 @@ logger = logging.getLogger(__name__)
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..dependencies import create_or_update_session, get_current_session, get_db
 from ..db_models import UserSession
-from ..patreon import PATREON_AUTHORIZE_URL, OAUTH_SCOPES, exchange_code, get_identity
+from ..dependencies import create_or_update_session, get_current_session, get_db
+from ..patreon import OAUTH_SCOPES, PATREON_AUTHORIZE_URL, exchange_code, get_identity
 from ..settings import get_settings
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -126,6 +126,6 @@ async def logout(
         await db.delete(session)
         await db.commit()
 
-    response = RedirectResponse(url="/", status_code=303)
+    response = RedirectResponse(url="https://shenan.art", status_code=303)
     response.delete_cookie("session_id")
     return response
