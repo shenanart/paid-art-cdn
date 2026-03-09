@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ file_name }}</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0f0f0f;
+      color: #e8e8e8;
+      font-family: system-ui, sans-serif;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      gap: 1rem;
+    }
+    .media-wrap {
+      width: 100%;
+      max-width: min(90vw, 90dvh * 1.78);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    video, img {
+      width: 100%;
+      height: auto;
+      max-height: 80dvh;
+      border-radius: 8px;
+      display: block;
+      object-fit: contain;
+      background: #000;
+    }
+    .btn-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.6rem 1.4rem;
+      background: #f96854;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    .btn-download:active { opacity: 0.85; }
+  </style>
+</head>
+<body>
+  <div class="media-wrap">
+    {% if is_video %}
+      <video controls playsinline preload="metadata">
+        <source src="/stream/{{ file_name }}">
+      </video>
+    {% else %}
+      <img src="/stream/{{ file_name }}" alt="{{ file_name }}">
+    {% endif %}
+  </div>
+  <a class="btn-download" href="/stream/{{ file_name }}" download="{{ file_name }}">
+    &#8595; Download
+  </a>
+</body>
+</html>
