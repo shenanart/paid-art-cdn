@@ -1,78 +1,32 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Tier Upgrade Required</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: system-ui, sans-serif;
-      background: #0f0f0f;
-      color: #e8e8e8;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 2rem;
-    }
-    .card {
-      background: #1a1a1a;
-      border: 1px solid #2e2e2e;
-      border-radius: 12px;
-      padding: 2.5rem 3rem;
-      max-width: 480px;
-      text-align: center;
-    }
-    .icon { font-size: 3rem; margin-bottom: 1rem; }
-    h1 { font-size: 1.5rem; margin-bottom: 0.75rem; }
-    p { color: #aaa; line-height: 1.6; margin-bottom: 0.5rem; }
-    .tier-list {
-      list-style: none;
-      margin: 1rem 0 1.5rem;
-    }
-    .tier-list li {
-      display: inline-block;
-      background: #2e2e2e;
-      border-radius: 4px;
-      padding: 0.25rem 0.75rem;
-      margin: 0.2rem;
-      font-size: 0.9rem;
-      color: #f96854;
-      font-weight: 600;
-    }
-    .btn {
-      display: inline-block;
-      padding: 0.65rem 1.4rem;
-      border-radius: 6px;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.95rem;
-      margin: 0.25rem;
-    }
-    .btn-primary { background: #f96854; color: #fff; }
-    .btn-secondary { background: #2e2e2e; color: #e8e8e8; }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <div class="icon">⭐</div>
-    <h1>Higher Tier Required</h1>
-    {% if full_name %}
-      <p>Hi <strong>{{ full_name }}</strong>
-        {% if tier_title %}— your current tier is <strong>{{ tier_title }}</strong>.{% endif %}
-      </p>
-    {% endif %}
-    <p>This content requires one of the following tiers:</p>
-    <ul class="tier-list">
-      {% for tier in required_tiers %}
-        <li>{{ tier }}</li>
-      {% endfor %}
-    </ul>
-    <a class="btn btn-primary" href="https://www.patreon.com" target="_blank" rel="noopener">
-      Upgrade Tier
-    </a>
-    <a class="btn btn-secondary" href="/auth/logout">Sign out</a>
-  </div>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Tier Upgrade Required{% endblock %}
+{% block main_class %}page-centered{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-icon">⭐</div>
+  <h1 class="card-title">Higher Tier Required</h1>
+  {% if full_name %}
+  <p class="card-text">
+    Hi <strong>{{ full_name }}</strong> {% if tier_title %}— your current
+    tier is <strong>{{ tier_title }}</strong>.{% endif %}
+  </p>
+  {% endif %}
+  <p class="card-text">This content requires one of the following tiers:</p>
+  <ul class="tier-list">
+    {% for tier in required_tiers %}
+    <li>{{ tier }}</li>
+    {% endfor %}
+  </ul>
+  <a
+    class="btn btn-primary"
+    href="https://www.patreon.com"
+    target="_blank"
+    rel="noopener"
+  >
+    Upgrade Tier
+  </a>
+  <a class="btn btn-secondary" href="/auth/logout">Sign out</a>
+</div>
+{% endblock %}

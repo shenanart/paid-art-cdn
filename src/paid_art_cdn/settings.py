@@ -23,6 +23,8 @@ class Settings(BaseSettings):
     cookie_secure: bool = True
     # Max requests per minute per IP on /access/ routes
     rate_limit_per_minute: int = 60
+    # Skip Patreon auth entirely — local dev only, never enable in production
+    dev_skip_auth: bool = False
 
 
 @lru_cache

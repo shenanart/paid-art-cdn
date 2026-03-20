@@ -4,6 +4,7 @@ from typing import cast
 
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from starlette.types import ExceptionHandler
@@ -33,6 +34,8 @@ app.state.limiter = limiter
 app.add_exception_handler(
     RateLimitExceeded, cast(ExceptionHandler, _rate_limit_exceeded_handler)
 )
+
+app.mount("/static", StaticFiles(directory="src/paid_art_cdn/static"), name="static")
 
 app.include_router(auth_router)
 app.include_router(cdn_router)

@@ -1,59 +1,28 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Access Denied</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: system-ui, sans-serif;
-      background: #0f0f0f;
-      color: #e8e8e8;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 2rem;
-    }
-    .card {
-      background: #1a1a1a;
-      border: 1px solid #2e2e2e;
-      border-radius: 12px;
-      padding: 2.5rem 3rem;
-      max-width: 480px;
-      text-align: center;
-    }
-    .icon { font-size: 3rem; margin-bottom: 1rem; }
-    h1 { font-size: 1.5rem; margin-bottom: 0.75rem; }
-    p { color: #aaa; line-height: 1.6; margin-bottom: 1.5rem; }
-    .btn {
-      display: inline-block;
-      padding: 0.65rem 1.4rem;
-      border-radius: 6px;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.95rem;
-      margin: 0.25rem;
-    }
-    .btn-primary { background: #f96854; color: #fff; }
-    .btn-secondary { background: #2e2e2e; color: #e8e8e8; }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <div class="icon">🔒</div>
-    <h1>Patron Access Required</h1>
-    {% if full_name %}
-      <p>Hi <strong>{{ full_name }}</strong> — this content is only available to active patrons.
-         You don't currently have an active pledge.</p>
-    {% else %}
-      <p>This content is only available to active patrons.</p>
-    {% endif %}
-    <a class="btn btn-primary" href="https://www.patreon.com" target="_blank" rel="noopener">
-      Become a Patron
-    </a>
-    <a class="btn btn-secondary" href="/auth/logout">Sign out</a>
-  </div>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Access Denied{% endblock %}
+{% block main_class %}page-centered{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-icon">🔒</div>
+  <h1 class="card-title">Patron Access Required</h1>
+  {% if full_name %}
+  <p class="card-text">
+    Hi <strong>{{ full_name }}</strong> — this content is only available to
+    active patrons. You don't currently have an active pledge.
+  </p>
+  {% else %}
+  <p class="card-text">This content is only available to active patrons.</p>
+  {% endif %}
+  <a
+    class="btn btn-primary"
+    href="https://www.patreon.com"
+    target="_blank"
+    rel="noopener"
+  >
+    Become a Patron
+  </a>
+  <a class="btn btn-secondary" href="/auth/logout">Sign out</a>
+</div>
+{% endblock %}

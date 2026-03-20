@@ -75,9 +75,10 @@ async def login(
 @router.get("/patreon", response_model=None)
 async def callback(
     request: Request,
-    code: str,
-    state: str,
     db: AsyncSession = Depends(get_db),
+    code: str | None = None,
+    state: str | None = None,
+    error: str | None = None,
 ) -> RedirectResponse | HTMLResponse:
     """Handle the Patreon OAuth callback.
 
@@ -89,6 +90,14 @@ async def callback(
     Patreon mobile app handles the authorization natively and opens the
     redirect_uri in a fresh browser context with no cookies.
     """
+    if error or not code or not state:
+        logger.info(
+            "OAuth callback: user denied or missing params. error=%r client=%s",
+            error,
+            request.client,
+        )
+        return RedirectResponse(url="https://shenan.art", status_code=303)
+
     settings = get_settings()
 
     result = await db.execute(

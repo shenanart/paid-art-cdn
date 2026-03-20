@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body class="site-body">
+    <header class="site-header">
+      <span class="site-name">Shenanart Paid Content</span>
+    </header>
+    <main class="{% block main_class %}{% endblock %}">
+      {% block content %}{% endblock %}
+    </main>
+    <footer class="site-footer">
+      <p>Made with 💖 by Shenanart</p>
+      <p>shenanart@gmail.com</p>
+      <p>©{{ current_year() }}</p>
+    </footer>
+  </body>
+</html>

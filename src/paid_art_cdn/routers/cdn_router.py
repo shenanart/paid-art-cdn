@@ -1,6 +1,7 @@
 """Protected file-delivery route."""
 
 import logging
+from datetime import datetime
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, Request
@@ -12,14 +13,15 @@ from slowapi import Limiter
 from slowapi.util import get_remote_address
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..dependencies import get_current_session, get_db
 from ..db_models import UserSession
+from ..dependencies import get_current_session, get_db
 from ..settings import get_settings
 
 router = APIRouter(tags=["cdn"])
 
 _TEMPLATES_DIR = Path(__file__).parent.parent / "templates"
 templates = Jinja2Templates(directory=str(_TEMPLATES_DIR))
+templates.env.globals["current_year"] = lambda: datetime.now().year
 
 # Module-level limiter — registered on the app in __init__.py
 limiter = Limiter(key_func=get_remote_address)
@@ -60,10 +62,17 @@ async def _check_access(
     session: UserSession | None,
 ):
     """Shared auth check. Returns a response on failure, None on success."""
+    settings = get_settings()
+
+    if settings.dev_skip_auth:
+        logger.warning(
+            "dev_skip_auth is enabled — bypassing Patreon auth for %s", file_name
+        )
+        return None
+
     if session is None:
         return RedirectResponse(url=f"/auth/login?next=/access/{file_name}")
 
-    settings = get_settings()
     allowed_tiers = {t.strip() for t in settings.paid_tier.split(",")}
 
     if session.patron_status != "active_patron":

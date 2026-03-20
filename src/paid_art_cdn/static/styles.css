@@ -1,0 +1,227 @@
+/* === Palette === */
+:root {
+  --color-sky-900:   oklch(39.1% 0.09 240.876);
+  --color-blue-400:  oklch(70.7% 0.165 254.624);
+  --color-slate-700: oklch(37.2% 0.044 257.287);
+  --color-slate-800: oklch(27.9% 0.041 260.031);
+  --color-slate-900: oklch(20.8% 0.042 265.755);
+  --color-slate-950: oklch(12.9% 0.042 264.695);
+  --color-gray-100:  oklch(96.7% 0.003 264.542);
+  --color-gray-200:  oklch(92.8% 0.006 264.531);
+  --color-gray-300:  oklch(87.2% 0.01 258.338);
+  --color-gray-500:  oklch(55.1% 0.027 264.364);
+  --color-gray-700:  oklch(37.3% 0.034 259.733);
+  --color-gray-800:  oklch(27.8% 0.033 256.848);
+  --color-gray-900:  oklch(21% 0.034 264.665);
+  --color-gray-950:  oklch(13% 0.028 261.692);
+}
+
+/* === Semantic variables === */
+:root {
+  --color-bg:          var(--color-slate-900);
+  --color-surface:     var(--color-slate-800);
+  --color-border:      var(--color-gray-950);  /* structural: header/footer */
+  --color-border-ui:   var(--color-gray-500);  /* interactive: buttons, inputs */
+  --color-text:        var(--color-gray-300);
+  --color-text-muted:  var(--color-gray-500);
+  --color-accent:      var(--color-blue-400);
+  --color-black:       #000;
+  --color-white:       #fff;
+}
+
+/* === Reset === */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* === Base === */
+
+a {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+
+/* === Site layout === */
+
+.site-body {
+  font-family: system-ui, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.site-header {
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.site-name {
+  display: inline-block;
+  color: var(--color-white);
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.site-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0.5rem 0;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  line-height: 1.8;
+}
+
+/* === Card pages (error, unauthorized, wrong_tier) === */
+
+.page-centered {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-slate-700);
+  border-radius: 0.5rem;
+  padding: 2.5rem 3rem;
+  max-width: 480px;
+  text-align: center;
+}
+
+.card-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.card-text {
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+/* === Buttons === */
+
+.btn {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin: 0.25rem;
+  border: 1px solid var(--color-border-ui);
+  transition: background-color 75ms;
+}
+
+.btn-primary {
+  background: var(--color-accent);
+  color: var(--color-white);
+  border-color: var(--color-accent);
+}
+
+.btn-primary:hover {
+  background: var(--color-sky-900);
+  border-color: var(--color-sky-900);
+  color: var(--color-white);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--color-text);
+}
+
+.btn-secondary:hover {
+  background: var(--color-gray-800);
+  color: var(--color-text);
+}
+
+/* === Tier list (wrong_tier page) === */
+
+.tier-list {
+  list-style: none;
+  margin: 1rem 0 1.5rem;
+}
+
+.tier-list li {
+  display: inline-block;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-ui);
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  margin: 0.2rem;
+  font-size: 0.9rem;
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+/* === Viewer page === */
+
+.page-viewer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  gap: 1rem;
+}
+
+.media-wrap {
+  width: 100%;
+  max-width: min(90vw, 90dvh * 1.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.media-wrap video,
+.media-wrap img {
+  width: 100%;
+  height: auto;
+  max-height: 80dvh;
+  border-radius: 0.5rem;
+  display: block;
+  object-fit: contain;
+  background: var(--color-black);
+}
+
+.btn-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.5rem;
+  background: var(--color-accent);
+  color: var(--color-white);
+  text-decoration: none;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-accent);
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: background-color 75ms;
+}
+
+.btn-download:hover {
+  background: var(--color-sky-900);
+  border-color: var(--color-sky-900);
+  color: var(--color-white);
+}
+
+.btn-download:active {
+  opacity: 0.85;
+}
